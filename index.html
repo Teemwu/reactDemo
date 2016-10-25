@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>React App</title>
+    <link href="build/bootstrap.min.css" rel="stylesheet">
+    <style>
+        th {
+            background-color: #b4b472;
+            text-align: center;
+        }
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(180, 180, 114, .5);
+        }
+
+        .table tbody tr td:first-child {
+            background-color: rgba(180, 180, 114, .1);
+        }
+    </style>
+</head>
+<body>
+<script src="./build/react.min.js"></script>
+<script src="build/react-dom.js"></script>
+<script src="build/browser.min.js"></script>
+<script src="build/jquery.min.js"></script>
+<script src="build/marked.min.js"></script>
+<script src="build/bootstrap-tab.js"></script>
+<script type="text/babel">
+    var Main = React.createClass({
+        getInitialState: function () {
+            return {
+                id: "watches",
+                type: "stargazers_count",
+                loading: true,
+                data: null,
+                error: null
+            }
+        },
+        getData: function () {
+            $.getJSON("https://api.github.com/search/repositories?q=javascript&sort=" + this.state.id).then(
+                    value=>this.setState({
+                        loading: false,
+                        data: value
+                    }),
+                    error=>this.setState({
+                        loading: false,
+                        error: error
+                    })
+            )
+        },
+        componentDidMount: function () {
+            this.getData();
+        },
+        handleClick: function (Id, Type, event) {
+            this.setState({id: Id});
+            this.getData();
+        },
+        render: function () {
+            if (this.state.loading) {
+                return <span>Loading...</span>
+            } else if (this.state.error !== null) {
+                return <span>Error:{this.state.error.message}</span>
+            } else {
+                var ID = this.state.id;
+                var req = this.state.data.items;
+                var reqList = req.map(function (reqo) {
+                    return (
+                            <tr>
+                                <td><a href={reqo.html_url}>{reqo.name}</a></td>
+                                <td>({reqo.stargazers_count})</td>
+                                <td>{reqo.description}</td>
+                            </tr>
+                    )
+                });
+                return (
+                        <div className="container">
+                            <ul id="myTab" className="Main nav nav-tabs">
+                                <li className="active"><a href="#watches" data-toggle="tab"
+                                                          onClick={this.handleClick.bind(this, "watches", "watchers_count")}>Watches</a>
+                                </li>
+                                <li className=""><a href="#stars" data-toggle="tab"
+                                                    onClick={this.handleClick.bind(this, "stars", "stargazers_count")}>Stars</a>
+                                </li>
+                                <li className=""><a href="#followers" data-toggle="tab"
+                                                    onClick={this.handleClick.bind(this, "followers")}>Followers</a>
+                                </li>
+                            </ul>
+                            <div id="myTabContent" className="tab-content">
+                                <div className="tab-pane fade active in">
+                                    <div id={ID}>
+                                        <table className="table table-hover">
+                                            <tr className="active">
+                                                <th className="active">Name</th>
+                                                <th className="success">{this.state.id}</th>
+                                                <th className="warning">Description</th>
+                                            </tr>
+                                            {reqList}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                )
+            }
+        }
+    });
+
+    ReactDOM.render(
+            <Main/>,
+            document.body
+    );
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="//cdn.bootcss.com/jquery/3.1.0/jquery.js"></script>
+</head>
+<body>
+<iframe id="if" src="test.html"></iframe>
+<script>
+    //注意：必须等页面加载完才能操作iframe内元素
+//   window.onload=function () {
+//       //iframe
+//       var target=document.getElementById("if");
+//       //#btn为iframe中页面的div标签id
+//
+//       target.contentDocument.body.querySelector("#btn").onclick=function () {
+//
+//           alert(123);
+//       };
+//   }
+        $(window).on("load",function () {
+            $( "#if" ).contents().find( "div" ).html("1235455555");
+        })
+
+
+</script>
+</body>
+</html>
